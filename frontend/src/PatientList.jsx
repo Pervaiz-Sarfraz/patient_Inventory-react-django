@@ -19,7 +19,7 @@ function PatientList() {
   }, []);
 
   const fetchPatients = () => {
-    fetchWithAuth('http://127.0.0.1:8001/patients/')
+    fetchWithAuth('http://127.0.0.1:8000/patients/')
       .then((response) => response.json())
       .then((data) => {
         setPatients(data);
@@ -49,7 +49,7 @@ function PatientList() {
     });
 
     if (response.status === 401 || response.status === 403) {
-      const refreshResponse = await fetch('http://127.0.0.1:8001/token/refresh/', {
+      const refreshResponse = await fetch('http://127.0.0.1:8000/token/refresh/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh }),
@@ -74,7 +74,7 @@ function PatientList() {
   };
 
   const deletePatient = (id) => {
-    fetchWithAuth(`http://127.0.0.1:8001/patients/${id}/`, { method: 'DELETE' })
+    fetchWithAuth(`http://127.0.0.1:8000/patients/${id}/`, { method: 'DELETE' })
       .then((response) => {
         if (response.ok) {
           setPatients(patients.filter((p) => p.patient_id !== id));
@@ -86,7 +86,7 @@ function PatientList() {
   };
 
   const editPatient = (patient) => {
-    setNewPatient({ ...patient, image: null }); // reset image to null for edit
+    setNewPatient({ ...patient, image: null });
     setIsEditing(true);
     setEditingPatientId(patient.patient_id);
     setShowForm(true);
@@ -96,8 +96,8 @@ function PatientList() {
     e.preventDefault();
     const method = isEditing ? 'PUT' : 'POST';
     const url = isEditing
-      ? `http://127.0.0.1:8001/patients/${editingPatientId}/`
-      : 'http://127.0.0.1:8001/patients/';
+      ? `http://127.0.0.1:8000/patients/${editingPatientId}/`
+      : 'http://127.0.0.1:8000/patients/';
 
     const formData = new FormData();
     formData.append('patient_id', newPatient.patient_id);
@@ -148,10 +148,14 @@ function PatientList() {
   };
 
   if (loading) return <p>Loading...</p>;
+console.log(patients);
 
   return (
 <>
-<button className='logout'>log out</button>
+<button className='logout' onClick={()=>{
+    localStorage.clear();
+    window.location.href = '/login';
+}}>log out</button>
 <div className="patient-list-container">
       <h1>Patient List</h1>
       <button className="add-patient-button" onClick={() => setShowForm(true)}>
